@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
     "build": "esbuild src/index.ts --platform=node --bundle --minify --outfile=build/index.js",
-    "prod": "node build/index.js prod"
+    "prod": "node build/index.js prod | pino-pretty"
   },
   "author": "Noitabara",
   "dependencies": {
