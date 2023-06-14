@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 
 import userRoute from "./routes/user/userRoute";
+import { migrator } from "./database/connector";
 const [, , enviornment] = process.argv;
 console.log(process.argv);
 const envLogger = (env: string): any => {
@@ -31,5 +32,8 @@ fastify.listen({ port: 3000, host: "0.0.0.0" }, (err, address) => {
     fastify.log.error(err);
     process.exit(1);
   }
+  migrator()
+    .then((data) => console.log("Database Migrated.", data))
+    .catch(console.error);
   console.log(`Servers' ear to the stars @${address}`);
 });

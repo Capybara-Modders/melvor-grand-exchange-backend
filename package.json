@@ -6,15 +6,23 @@
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
     "build": "esbuild src/index.ts --platform=node --bundle --minify --outfile=build/index.js",
-    "prod": "node build/index.js prod | pino-pretty"
+    "prod": "node build/index.js prod | pino-pretty",
+    "generate": "drizzle-kit generate:sqlite",
+    "full-restart": "drizzle-kit drop --config=drizzle.config.ts"
   },
   "author": "Noitabara",
   "dependencies": {
+    "better-sqlite3": "^8.4.0",
+    "drizzle-orm": "^0.26.5",
     "fastify": "^4.17.0",
     "fastify-plugin": "^4.5.0",
-    "lowdb": "^6.0.1"
+    "lowdb": "^6.0.1",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.4",
+    "@types/uuid": "^9.0.2",
+    "drizzle-kit": "^0.18.1",
     "esbuild": "^0.17.19",
     "esbuild-plugin-pino": "^2.0.0",
     "pino-pretty": "^10.0.0",
