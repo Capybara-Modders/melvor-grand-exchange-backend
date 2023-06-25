@@ -10,6 +10,8 @@ import {
   UserInsert,
   marketplace,
   users,
+  mailbox,
+  MailboxInsert,
 } from "./schema/schema";
 
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
@@ -88,6 +90,7 @@ export async function returnAllMarketplaceListings() {
     .all();
 }
 export async function tradeMarketplaceListing(
+  tradingUserId: number,
   listingId: number,
   amountToTrade: number
 ) {
@@ -97,9 +100,23 @@ export async function tradeMarketplaceListing(
   if (!targetListing) throw Error("No listing found.");
   if (targetListing.providingItemCount < amountToTrade)
     throw Error("Not enough to trade.");
+  //Successful Trades below.
   if (targetListing.providingItemCount == amountToTrade) {
     //? Proceed with trade and delete record as it's been bought out.
     await cancelMarketplaceListing(listingId);
+    //Create a trade listing for the user making the trade.
+    await createUserMailItem({
+      deliveredItem: targetListing.providingItemId,
+      deliveredItemCount: amountToTrade,
+      ownedUserId: tradingUserId,
+    });
+    //Create a listing for the user who owns the trade
+    const [, requestedRatioMultiplier] = parseTradeRatio(targetListing.tradingRatio)
+    await createUserMailItem({
+      deliveredItem:  targetListing.requestedItemId,
+      deliveredItemCount: targetListing.requestedItemCount * requestedRatioMultiplier,
+      ownedUserId: targetListing.tradingUser
+    })
     return {
       itemId: targetListing.providingItemId,
       itemCount: targetListing.providingItemCount,
@@ -109,5 +126,41 @@ export async function tradeMarketplaceListing(
     ...targetListing,
     providingItemCount: targetListing.providingItemCount - amountToTrade,
   });
+  //Create a trade listing for the user making the trade.
+  await createUserMailItem({
+    deliveredItem: targetListing.providingItemId,
+    deliveredItemCount: amountToTrade,
+    ownedUserId: tradingUserId,
+  });
+  //Create a listing for the user who owns the trade
+  const [, requestedRatioMultiplier] = parseTradeRatio(targetListing.tradingRatio)
+  await createUserMailItem({
+    deliveredItem:  targetListing.requestedItemId,
+    deliveredItemCount: targetListing.requestedItemCount * requestedRatioMultiplier,
+    ownedUserId: targetListing.tradingUser
+  })
   return updatedRecord;
+}
+/**------------------------------------------------------------------------
+ * *                         Mailbox Functions
+ * So this group of functions should handle the creation and "acceptance" of mail
+ *------------------------------------------------------------------------**/
+export async function fetchUserMailbox(userId: number) {
+  return db.query.mailbox.findMany({ where: eq(mailbox.ownedUserId, userId) });
+}
+export async function acceptUserMail(mailItem: number) {
+  return db.delete(mailbox).where(eq(mailbox.id, mailItem)).run();
+}
+export async function createUserMailItem(mailboxInsert: MailboxInsert) {
+  return db.insert(mailbox).values(mailboxInsert).get();
+}
+
+
+//? Utility
+export function parseTradeRatio(tradeRatio: string): [number, number] {
+  const [first, second] = tradeRatio.split(',').map(each => parseInt(each))
+  return [first, second]
+}
+export function stringifiyTradeRatio(tradeRatio: [number, number]): string {
+  return `${tradeRatio[0]},${tradeRatio[1]}`
 }

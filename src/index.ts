@@ -1,6 +1,6 @@
 import Fastify from "fastify";
 
-import userRoute from "./routes/user/userRoute";
+import bulkRoute from "./routes/user/bulkRouter";
 import { migrator } from "./database/connector";
 const [, , enviornment] = process.argv;
 console.log(process.argv);
@@ -25,7 +25,7 @@ const fastify = Fastify({
   logger: envLogger(enviornment),
 });
 
-fastify.register(userRoute);
+fastify.register(bulkRoute);
 
 fastify.listen({ port: 3000, host: "0.0.0.0" }, (err, address) => {
   if (err) {

@@ -1,8 +1,10 @@
 import { FastifyInstance, RouteOptions } from "fastify";
 import {
+  acceptUserMail,
   cancelMarketplaceListing,
   createMarketplaceListing,
   createUser,
+  fetchUserMailbox,
   getUsers,
   returnAllMarketplaceListings,
 } from "../../database/connector";
@@ -14,7 +16,12 @@ export default async function routes(
   options: RouteOptions
 ) {
   fastify.get("/", async (request, reply) => {
+    console.log(request.body);
     return { Hello: "there!" };
+  });
+  fastify.post("/", async (request, reply) => {
+    console.log("Had a body", request.body);
+    return "Nice";
   });
 
   /**------------------------------------------------------------------------
@@ -87,4 +94,42 @@ export default async function routes(
       return;
     }
   });
+  fastify.post<{ Body: { listingId: number; tradeAmount: number } }>(
+    "/marketplaceTrade",
+    async (request, reply) => {
+      try {
+      } catch (error) {
+        fastify.log.error(error);
+        reply.code(500).send("Issue making marketplace trade.");
+        return;
+      }
+    }
+  );
+  /**------------------------------------------------------------------------
+   * *                         Mailbox Functions
+   *------------------------------------------------------------------------**/
+  fastify.get<{ Params: { userId: number } }>(
+    "/userMailbox/:userId",
+    async (request, reply) => {
+      try {
+        return fetchUserMailbox(request.params.userId);
+      } catch (error) {
+        fastify.log.error(error);
+        reply.code(500).send("Issue fetching mailbox listings.");
+        return;
+      }
+    }
+  );
+  fastify.delete<{ Params: { mailitemId: number } }>(
+    "/mailItem/:mailItemId",
+    async (request, reply) => {
+      try {
+        return acceptUserMail(request.params.mailitemId);
+      } catch (error) {
+        fastify.log.error(error);
+        reply.code(500).send("Issue deleting mailbox listings.");
+        return;
+      }
+    }
+  );
 }
