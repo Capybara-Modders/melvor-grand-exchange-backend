@@ -7,6 +7,7 @@ import {
   fetchUserMailbox,
   getUsers,
   returnAllMarketplaceListings,
+  tradeMarketplaceListing,
 } from "../../database/connector";
 import { v4 } from "uuid";
 import { MarketplaceInsert } from "../../database/schema/schema";
@@ -35,7 +36,11 @@ export default async function routes(
         return;
       }
       try {
-        return createUser({ name: request.params.username, apiKey: v4() });
+        return createUser({
+          name: request.params.username,
+          apiKey: v4(),
+          id: v4(),
+        });
       } catch (error) {
         fastify.log.error(error);
         reply.code(500).send("Issue creating user.");
@@ -58,7 +63,11 @@ export default async function routes(
   fastify.post<{ Body: MarketplaceInsert }>(
     "/createListing",
     async (request, reply) => {
-      if (!request.body) {
+      if (
+        !request.body ||
+        Object.values(request.body).some((value) => !value)
+      ) {
+        //TODO to map the null values so we can return what is missing. Should be easy with a .filter fn
         reply.code(500).send("You must pass listing data");
         return;
       }
@@ -72,11 +81,10 @@ export default async function routes(
       }
     }
   );
-  fastify.delete<{ Params: { listingId: number } }>(
+  fastify.delete<{ Params: { listingId: string } }>(
     "/deleteListing/:listingId",
     async (request, reply) => {
       try {
-        fastify.log.info(request.body);
         return cancelMarketplaceListing(request.params.listingId);
       } catch (error) {
         fastify.log.error(error);
@@ -94,23 +102,39 @@ export default async function routes(
       return;
     }
   });
-  fastify.post<{ Body: { listingId: number; tradeAmount: number } }>(
-    "/marketplaceTrade",
-    async (request, reply) => {
-      try {
-      } catch (error) {
-        fastify.log.error(error);
-        reply.code(500).send("Issue making marketplace trade.");
-        return;
-      }
+  fastify.post<{
+    Body: { listingId: string; amountToTrade: number; buyingUserId: string };
+  }>("/marketplaceTrade", async (request, reply) => {
+    if (
+      !request.body.listingId ||
+      !request.body.amountToTrade ||
+      !request.body.buyingUserId
+    ) {
+      reply.code(500).send("You're missing one of the 3 datapoints.");
+      return;
     }
-  );
+    try {
+      return tradeMarketplaceListing(
+        request.body.buyingUserId,
+        request.body.listingId,
+        request.body.amountToTrade
+      );
+    } catch (error) {
+      fastify.log.error(error);
+      reply.code(500).send("Issue making marketplace trade.");
+      return;
+    }
+  });
   /**------------------------------------------------------------------------
    * *                         Mailbox Functions
    *------------------------------------------------------------------------**/
-  fastify.get<{ Params: { userId: number } }>(
+  fastify.get<{ Params: { userId: string } }>(
     "/userMailbox/:userId",
     async (request, reply) => {
+      if (!request.params.userId) {
+        reply.code(500).send("A valid user id must be provided to make this request");
+        return;
+      }
       try {
         return fetchUserMailbox(request.params.userId);
       } catch (error) {
@@ -120,11 +144,16 @@ export default async function routes(
       }
     }
   );
-  fastify.delete<{ Params: { mailitemId: number } }>(
+  fastify.delete<{ Params: { mailItemId: string } }>(
     "/mailItem/:mailItemId",
     async (request, reply) => {
+      console.log("bruh", request.params.mailItemId)
+      if (!request.params.mailItemId) {
+        reply.code(500).send("A valid mail ID must be passed to make this request");
+        return;
+      }
       try {
-        return acceptUserMail(request.params.mailitemId);
+        return acceptUserMail(request.params.mailItemId);
       } catch (error) {
         fastify.log.error(error);
         reply.code(500).send("Issue deleting mailbox listings.");

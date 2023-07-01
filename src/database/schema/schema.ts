@@ -9,7 +9,7 @@ import type { InferModel } from "drizzle-orm";
 export const users = sqliteTable(
   "users",
   {
-    id: integer("id").primaryKey(),
+    id: text("id").primaryKey(),
     name: text("name").notNull(),
     apiKey: text("api_key").notNull(),
     createdAt: integer("created_at", { mode: "timestamp" })
@@ -22,24 +22,27 @@ export const users = sqliteTable(
 );
 
 export const marketplace = sqliteTable("marketplace", {
-  id: integer("id").primaryKey(),
-  tradingUser: integer("user_id")
-    .references(() => users.id)
+  id: text("id").primaryKey(),
+  listingCreatorUserId: text("listing_creator_user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
-  requestedItemId: text("requested_item_id").notNull(),
-  providingItemId: text("providing_item_id").notNull(),
-  requestedItemCount: integer("requested_item_count").notNull(),
-  providingItemCount: integer("providing_item_count").notNull(),
-  tradingRatio: text("trading_ratio").notNull(),
+  listedItemId: text("listed_item_id").notNull(),
+  listedItemBaseCount: integer("listed_item_base_count").notNull(),
+  buyingItemId: text("buying_item_id").notNull(),
+  buyingItemBaseCount: integer("buying_item_base_count").notNull(),
+  totalTrades: integer("total_trades").notNull(),
+  totalTradesRemaining: integer("total_trades_remaining").notNull(),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .defaultNow(),
 });
 
 export const mailbox = sqliteTable("mailbox", {
-  id: integer("id").primaryKey(),
-  ownedUserId: integer("owned_user_id")
-    .references(() => users.id)
+  id: text("id").primaryKey(),
+  ownedUserId: text("owned_user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
   deliveredItem: text("delivered_item").notNull(),
   deliveredItemCount: integer("delivered_item_count").notNull(),
@@ -47,18 +50,22 @@ export const mailbox = sqliteTable("mailbox", {
 
 export type Mailbox = InferModel<typeof mailbox>;
 export type User = InferModel<typeof users>;
-export type UserInsert = Pick<InferModel<typeof users>, "name" | "apiKey">;
+export type UserInsert = Pick<
+  InferModel<typeof users>,
+  "name" | "apiKey" | "id"
+>;
 export type Marketplace = InferModel<typeof marketplace>;
 export type MarketplaceInsert = Pick<
   InferModel<typeof marketplace>,
-  | "providingItemCount"
-  | "providingItemId"
-  | "requestedItemCount"
-  | "requestedItemId"
-  | "tradingRatio"
-  | "tradingUser"
+  | "listingCreatorUserId"
+  | "listedItemId"
+  | "listedItemBaseCount"
+  | "buyingItemId"
+  | "buyingItemBaseCount"
+  | "totalTrades"
+  | "totalTradesRemaining"
 >;
 export type MailboxInsert = Pick<
   InferModel<typeof mailbox>,
-  "ownedUserId" | "deliveredItem" | "deliveredItemCount"
+  "ownedUserId" | "deliveredItem" | "deliveredItemCount" | "id"
 >;
