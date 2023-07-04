@@ -3,3 +3,4 @@ build
 .env
 *.db
 /drizzle
+build.zip

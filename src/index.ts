@@ -2,8 +2,10 @@ import Fastify from "fastify";
 import nonAuthRequiredRoutes from "./routes/openRequests/open"
 import authRequiredRoutes from "./routes/user/bulkRouter";
 import { migrator } from "./database/connector";
+import cors from "@fastify/cors"
+
 const [, , enviornment] = process.argv;
-console.log(process.argv);
+// console.log(process.argv);
 const envLogger = (env: string): any => {
   switch (env) {
     case "prod":
@@ -25,6 +27,9 @@ const fastify = Fastify({
   logger: envLogger(enviornment),
 });
 
+// fastify.register(cors, {
+//   origin: "*"
+// })
 fastify.register(nonAuthRequiredRoutes)
 fastify.register(authRequiredRoutes);
 
