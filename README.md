@@ -3,7 +3,7 @@
 Hello.
 It may be exciting to get here and start setting stuff up, but let's take time to make sure we understand what we get ourselves into.
 
-This server must be hosted, requires nginx(or other reverse proxy solution), and certs for https. The default port is 3000 so you'd want to proxy_pass to http://localhost:3000, etc.
+This server must be hosted, requires nginx(or other reverse proxy solution), and certs for https. The default port is 3000 so you'd want to `proxy_pass http://localhost:3000;`, etc.
 
 Letsencrypt may be your best solution for free certs.
 
@@ -16,3 +16,6 @@ I'm unsure how much damage the free tier can take given requests, so i'd keep yo
 
 
 I hope to have a guide/etc. up and running before the end of the month(sooner rather than later). Mostly concerned with getting testing in and getting MVP done before the contest(tomorrow as of writing lol)
+
+
+https://www.vultr.com/?ref=9252619-8H if you'd like to use my referral code for a place to host. I do not this there, but I do for my discord bots.
