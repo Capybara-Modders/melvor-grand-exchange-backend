@@ -25,6 +25,7 @@ TLDR, https://ngrok.com/ free tier to start playing with hosting your own server
 
 1. Download zip
 2. unzip zip
-3. execute run.bat/run.sh
-4. run ngrok `ngrok http 3000`
-5. Share the provided ngrok link with YOUR FRIENDS ONLY. I highly advise you play with people you actually know.
+3. install ngrok
+4. execute run.bat/run.sh
+5. run ngrok `ngrok http 3000`
+6. Share the provided ngrok link with YOUR FRIENDS ONLY. I highly advise you play with people you actually know.
