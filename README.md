@@ -30,6 +30,7 @@ TLDR, https://ngrok.com/ free tier to start playing with hosting your own server
 2. install pnpm (npm may work, untested)
 3. pnpm/npm install in root folder
 4. install ngrok
-5. run `pnpm/npm run dev`
-6. run ngrok `ngrok http 3000`
-7. Share the provided *HTTPS* ngrok link with YOUR FRIENDS ONLY. I highly advise you play with people you actually know.
+5. run `pnpm/npm run generate`
+6. run `pnpm/npm run dev`
+7. run ngrok `ngrok http 3000`
+8. Share the provided *HTTPS* ngrok link with YOUR FRIENDS ONLY. I highly advise you play with people you actually know.
