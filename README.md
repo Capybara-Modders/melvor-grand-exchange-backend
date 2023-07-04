@@ -19,3 +19,6 @@ I hope to have a guide/etc. up and running before the end of the month(sooner ra
 
 
 https://www.vultr.com/?ref=9252619-8H if you'd like to use my referral code for a place to host. I do not this there, but I do for my discord bots.
+
+
+TLDR, https://ngrok.com/ free tier to start playing with hosting your own server.
