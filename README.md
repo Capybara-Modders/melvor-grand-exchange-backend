@@ -35,3 +35,5 @@ TLDR, https://ngrok.com/ free tier to start playing with hosting your own server
 7. run `pnpm/npm run dev`
 8. run ngrok `ngrok http 3000`
 9. Share the provided *HTTPS* ngrok link with YOUR FRIENDS ONLY. I highly advise you play with people you actually know.
+
+Toss a coffee to your coder! https://ko-fi.com/noita
