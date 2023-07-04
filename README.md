@@ -22,3 +22,9 @@ https://www.vultr.com/?ref=9252619-8H if you'd like to use my referral code for 
 
 
 TLDR, https://ngrok.com/ free tier to start playing with hosting your own server.
+
+1. Download zip
+2. unzip zip
+3. execute run.bat/run.sh
+4. run ngrok `ngrok http 3000`
+5. Share the provided ngrok link with YOUR FRIENDS ONLY. I highly advise you play with people you actually know.
