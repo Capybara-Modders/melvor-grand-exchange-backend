@@ -1,10 +1,15 @@
-import { FastifyInstance, RouteOptions } from "fastify";
+import {
+  FastifyError,
+  FastifyInstance,
+  RouteOptions,
+} from "fastify";
 import {
   acceptUserMail,
   cancelMarketplaceListing,
   createMarketplaceListing,
-  createUser,
   fetchUserMailbox,
+  getApiKeys,
+  getUserByApiKey,
   getUsers,
   returnAllMarketplaceListings,
   tradeMarketplaceListing,
@@ -14,55 +19,72 @@ import { MarketplaceInsert } from "../../database/schema/schema";
 
 export default async function routes(
   fastify: FastifyInstance,
-  options: RouteOptions
+  options: RouteOptions,
+  done: (error: FastifyError) => void
 ) {
-  fastify.get("/", async (request, reply) => {
-    console.log(request.body);
-    return { Hello: "there!" };
+  fastify.addHook("preHandler", (request, reply, done) => {
+    if (!request.headers.authorization) {
+      reply.code(403).send("No auth code.");
+      return;
+    }
+    const [, token] = request.headers.authorization.split("Bearer ");
+    getApiKeys()
+      .then((keys) => {
+        if (!keys.includes(token)) {
+          reply.code(403).send("Wrong auth code, or you're not a user.");
+          return;
+        }
+        done();
+      })
+      .catch(() => {
+        reply.code(403).send("Wrong auth code. You're not a user.");
+        return;
+      });
   });
-  fastify.post("/", async (request, reply) => {
-    console.log("Had a body", request.body);
-    return "Nice";
-  });
+
+  // fastify.get("/", async (request, reply) => {
+  //   console.log(request.body);
+  //   return { Hello: "there!" };
+  // });
+  // fastify.post("/", async (request, reply) => {
+  //   console.log("Had a body", request.body);
+  //   return "Nice";
+  // });
 
   /**------------------------------------------------------------------------
    * *                         User Endpoints
    *------------------------------------------------------------------------**/
-  fastify.post<{ Params: { username: string } }>(
-    "/newUser/:username",
+  fastify.get(
+    "/getUsers",
+    // { preHandler: [bearerMid] },
     async (request, reply) => {
-      if (!request.params.username) {
-        reply.code(500).send("We require a username.");
-        return;
-      }
       try {
-        return createUser({
-          name: request.params.username,
-          apiKey: v4(),
-          id: v4(),
-        });
+        return getUsers();
       } catch (error) {
         fastify.log.error(error);
-        reply.code(500).send("Issue creating user.");
+        reply.code(500).send("Issue fetching users.");
         return;
       }
     }
   );
-  fastify.get("/getUsers", async (request, reply) => {
-    try {
-      return getUsers();
-    } catch (error) {
-      fastify.log.error(error);
-      reply.code(500).send("Issue fetching users.");
-      return;
+  fastify.get(
+    "/user",
+    async (request, reply) => {
+      try {
+        return getUserByApiKey(request.headers.authorization?.split("Bearer ")[1]!);
+      } catch (error) {
+        fastify.log.error(error);
+        reply.code(500).send("Issue fetching users.");
+      }
     }
-  });
+  );
   /**------------------------------------------------------------------------
    * *                         Marketplace Functions
    *------------------------------------------------------------------------**/
   fastify.post<{ Body: MarketplaceInsert }>(
     "/createListing",
     async (request, reply) => {
+      console.log(Object.values(request.body))
       if (
         !request.body ||
         Object.values(request.body).some((value) => !value)
@@ -132,7 +154,9 @@ export default async function routes(
     "/userMailbox/:userId",
     async (request, reply) => {
       if (!request.params.userId) {
-        reply.code(500).send("A valid user id must be provided to make this request");
+        reply
+          .code(500)
+          .send("A valid user id must be provided to make this request");
         return;
       }
       try {
@@ -146,14 +170,18 @@ export default async function routes(
   );
   fastify.delete<{ Params: { mailItemId: string } }>(
     "/mailItem/:mailItemId",
+    // { preHandler: [bearerMid] },
     async (request, reply) => {
-      console.log("bruh", request.params.mailItemId)
       if (!request.params.mailItemId) {
-        reply.code(500).send("A valid mail ID must be passed to make this request");
+        console.log(`Constellation, "_narva", annoying poop smeller`);
+        reply
+          .code(500)
+          .send("A valid mail ID must be passed to make this request");
         return;
       }
       try {
-        return acceptUserMail(request.params.mailItemId);
+        await acceptUserMail(request.params.mailItemId);
+        return true
       } catch (error) {
         fastify.log.error(error);
         reply.code(500).send("Issue deleting mailbox listings.");

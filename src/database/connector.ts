@@ -42,9 +42,9 @@ export async function createUser(userInsert: UserInsert): Promise<User> {
   //? Only user who does not currently exist may query. Validate on API key.
   return db.insert(users).values(userInsert).returning().get();
 }
-export async function getUserByName(name: string): Promise<User | undefined> {
+export async function getUserByApiKey(apiKey: string): Promise<User | undefined> {
   //? Only admin and user that owns this record may query. Validate on API key.
-  return db.query.users.findFirst({ where: eq(users.name, name) });
+  return db.query.users.findFirst({ where: eq(users.apiKey, apiKey) });
 }
 export async function getUsers(): Promise<
   Pick<User, "createdAt" | "id" | "name">[]
@@ -61,16 +61,14 @@ export async function getUsers(): Promise<
  *------------------------------------------------------------------------**/
 export async function createMarketplaceListing(
   marketplaceInsert: MarketplaceInsert
-): Promise<Marketplace> {
+): Promise<void> {
   //? Only existing users may create a marketplace listing. Validate on API key.
-  return db
+  await db
     .insert(marketplace)
     .values({
       ...marketplaceInsert,
       id: v4(),
-    })
-    .returning()
-    .get();
+    }).run();
 }
 export async function cancelMarketplaceListing(passedId: string) {
   await db.delete(marketplace).where(eq(marketplace.id, passedId)).run()
