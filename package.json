@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
     "build": "esbuild src/index.ts --platform=node --bundle --minify --outfile=build/index.js",
+    "build20sea": "esbuild src/index.ts --bundle --platform=node --outfile=server-out.js",
     "prod": "node build/index.js prod | pino-pretty",
     "generate": "drizzle-kit generate:sqlite",
     "full-restart": "drizzle-kit drop --config=drizzle.config.ts"
