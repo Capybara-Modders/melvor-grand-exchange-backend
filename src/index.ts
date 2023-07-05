@@ -1,8 +1,7 @@
 import Fastify from "fastify";
-import nonAuthRequiredRoutes from "./routes/openRequests/open"
+import nonAuthRequiredRoutes from "./routes/openRequests/open";
 import authRequiredRoutes from "./routes/user/bulkRouter";
 import { migrator } from "./database/connector";
-import cors from "@fastify/cors"
 
 const [, , enviornment] = process.argv;
 // console.log(process.argv);
@@ -30,7 +29,7 @@ const fastify = Fastify({
 // fastify.register(cors, {
 //   origin: "*"
 // })
-fastify.register(nonAuthRequiredRoutes)
+fastify.register(nonAuthRequiredRoutes);
 fastify.register(authRequiredRoutes);
 
 fastify.listen({ port: 3000, host: "0.0.0.0" }, (err, address) => {
