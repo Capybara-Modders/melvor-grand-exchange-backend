@@ -1,6 +1,6 @@
 {
   "name": "noita-mmb",
-  "version": "0.0.1-beta",
+  "version": "0.0.3",
   "description": "Noita's melvor multiplayer backend",
   "main": "src/index.ts",
   "scripts": {
