@@ -1,5 +1,5 @@
 # Check if the paths below exist, if so delete them so we can recreate them.
-$BuildPaths = @("./build/sqlite.db", "./build/drizzle", "./build/build", "./build/package.json")
+$BuildPaths = @("./build/sqlite.db", "./build/drizzle", "./build/build", "./build/package.json", "./build/logging", "./server.zip")
 foreach ($TargetPath in $BuildPaths) {
   if (Test-Path $TargetPath) {
     Remove-Item $TargetPath -Recurse
@@ -15,6 +15,8 @@ pnpm run build
 #Copy the built files into the correct directory
 Copy-Item -Path "./drizzle" -Destination "./build/" -Recurse
 New-Item -ItemType Directory -Path "./build/build"
+New-Item -ItemType Directory -Path "./build/logging"
+New-Item -ItemType File -Path "./build/logging/out"
 Copy-Item -Path "./node_modules/better-sqlite3/build/Release/better_sqlite3.node" -Destination "./build/build/"
 
 #Copy the data from our existing package.json so I don't have to manually update the version.
