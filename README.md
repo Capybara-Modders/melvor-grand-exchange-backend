@@ -13,27 +13,15 @@ Another(easier) option you may find useful is using Ngrok. This is the solution 
 
 I'm unsure how much damage the free tier can take given requests, so i'd keep your groups small for now.
 
-
-
-I hope to have a guide/etc. up and running before the end of the month(sooner rather than later). Mostly concerned with getting testing in and getting MVP done before the contest(tomorrow as of writing lol)
-
-
 https://www.vultr.com/?ref=9252619-8H if you'd like to use my referral code for a place to host. I do not this there, but I do for my discord bots.
-
-Update. So I've been wrestling with getting the built files working all morning. Just going to release the source here. While that's cool, it's also annoying because you're going to now need node and to install a black holes worth of node modules until I can get the build flow working correctly.
-
-Sorry.
 
 TLDR, https://ngrok.com/ free tier to start playing with hosting your own server.
 
-1. Download release files from the right
-2. Install node 18+
-3. install pnpm (npm may work, untested)
-4. pnpm/npm install in root folder
-5. install ngrok
-6. run `pnpm/npm run generate`
-7. run `pnpm/npm run dev`
-8. run ngrok `ngrok http 3000`
-9. Share the provided *HTTPS* ngrok link with YOUR FRIENDS ONLY. I highly advise you play with people you actually know.
+1. Install nodejs 20.3.1
+2. download and extract respective .zip file from this release
+3. In the extracted folder with terminal/commandline/etc. run node index.js prod
+4. If you're not running an nginx/etc. server, run ngrok for simple https tunnels
+5. provide the https url to your friends
+6. enjoy!
 
 Toss a coffee to your coder! https://ko-fi.com/noita
