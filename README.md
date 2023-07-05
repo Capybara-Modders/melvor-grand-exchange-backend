@@ -15,7 +15,7 @@ I'm unsure how much damage the free tier can take given requests, so i'd keep yo
 
 https://www.vultr.com/?ref=9252619-8H if you'd like to use my referral code for a place to host. I do not this there, but I do for my discord bots.
 
-TLDR, https://ngrok.com/ free tier to start playing with hosting your own server.
+TLDR, https://ngrok.com/ free tier along side the release files to start playing with hosting your own server.
 
 1. Install nodejs 20.3.1
 2. download and extract respective .zip file from this release
