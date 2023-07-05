@@ -12,7 +12,7 @@ then
 fi
 
 # Remove existing build files. In retrospect, could probably just remove the entire build folder lol.
-TargetPaths=("./build/sqlite.db" "./build/drizzle" "./build/build" "./build/package.json")
+TargetPaths=("./build/sqlite.db" "./build/drizzle" "./build/build" "./build/package.json" "./build/logging" "./server.zip")
 for TargetPath in ${TargetPaths[@]}; do
   rm -rf -f on $TargetPath
   echo $TargetPath "removed"
@@ -26,6 +26,7 @@ pnpm run build
 # Copy build resources into build folder.
 cp -r "./drizzle" "./build/"
 mkdir "./build/build"
+mkdir "./build/logging"
 cp "./node_modules/better-sqlite3/build/Release/better_sqlite3.node" "./build/build/"
 
 # Write package.json to the build folder

@@ -4,11 +4,12 @@ import authRequiredRoutes from "./routes/user/bulkRouter";
 import { migrator } from "./database/connector";
 
 const [, , enviornment] = process.argv;
-// console.log(process.argv);
 const envLogger = (env: string): any => {
   switch (env) {
     case "prod":
-      return true;
+      return {
+        file: './logging/out'
+      };
     default:
       return {
         transport: {
@@ -26,9 +27,6 @@ const fastify = Fastify({
   logger: envLogger(enviornment),
 });
 
-// fastify.register(cors, {
-//   origin: "*"
-// })
 fastify.register(nonAuthRequiredRoutes);
 fastify.register(authRequiredRoutes);
 
@@ -38,7 +36,10 @@ fastify.listen({ port: 3000, host: "0.0.0.0" }, (err, address) => {
     process.exit(1);
   }
   migrator()
-    .then((data) => console.log("Database Migrated.", data))
-    .catch(console.error);
+    .then(() => console.log("Database Migrated."))
+    .catch(error => {
+      fastify.log.error(error)
+      console.error(error)
+    });
   console.log(`Servers' ear to the stars @${address}`);
 });
